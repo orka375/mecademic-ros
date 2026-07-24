@@ -25,7 +25,7 @@ endif()
 
 # Install the directories containing your robot description and launch files
 install(
-  DIRECTORY urdf meshes launch rviz
+  DIRECTORY urdf meshes launch
   DESTINATION share/${PROJECT_NAME}
 )
 

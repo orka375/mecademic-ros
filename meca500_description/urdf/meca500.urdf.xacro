@@ -1,16 +1,22 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="Meca500_R4">
 
-  <xacro:arg name="use_sim_hardware" default="false"/>
+  <xacro:arg name="use_sim_hardware" default="true"/>
   <xacro:arg name="robot_ip"         default="192.168.0.100"/>
 
   <xacro:include filename="meca500_macro.xacro"/>
   <xacro:include filename="meca500.ros2_control.xacro"/>
   <xacro:include filename="meca500.gazebo.xacro"/>
 
-  <link name="world"/>
+  <!-- Root link for mounting the robot (with minimal inertia for Gazebo) -->
+  <link name="robot_base">
+    <inertial>
+      <mass value="0.001"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+  </link>
 
-  <xacro:meca500 parent="world">
+  <xacro:meca500 parent="robot_base">
     <origin xyz="0 0 0" rpy="0 0 0"/>
   </xacro:meca500>
 

@@ -1,12 +1,14 @@
 from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument,
+    ExecuteProcess,
     RegisterEventHandler,
     TimerAction,
 )
 from launch.event_handlers import OnProcessExit
 from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
+from launch_ros.parameter_descriptions import ParameterValue
 from launch_ros.substitutions import FindPackageShare
 
 
@@ -26,17 +28,26 @@ def generate_launch_description():
         ),
         " use_sim_hardware:=true",
     ])
-    robot_description = {"robot_description": robot_description_content}
+    robot_description = {
+        "robot_description": ParameterValue(robot_description_content, value_type=str)
+    }
 
-    # 1. Start Gazebo Ignition
-    gazebo = Node(
-        package="ros_gz_sim",
-        executable="gz_sim",
-        arguments=[LaunchConfiguration("world"), "-r"],
+    # 1. Start Gazebo Ignition (server-only mode to avoid GUI library conflicts)
+    gazebo = ExecuteProcess(
+        cmd=["gz", "sim", "-s", LaunchConfiguration("world"), "-r"],
         output="screen",
     )
 
-    # 2. Robot state publisher (uses sim time from /clock)
+    # 2. Gazebo-ROS bridge for clock synchronization
+    clock_bridge = Node(
+        package="ros_gz_bridge",
+        executable="parameter_bridge",
+        arguments=["/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock"],
+        output="screen",
+        parameters=[{"use_sim_time": True}],
+    )
+
+    # 3. Robot state publisher (uses sim time from /clock)
     robot_state_publisher = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
@@ -44,7 +55,7 @@ def generate_launch_description():
         parameters=[robot_description, {"use_sim_time": True}],
     )
 
-    # 3. Spawn robot entity; Gazebo converts /robot_description URDF → SDF automatically
+    # 4. Spawn robot entity; Gazebo converts /robot_description URDF → SDF automatically
     spawn_robot = Node(
         package="ros_gz_sim",
         executable="create",
@@ -52,7 +63,7 @@ def generate_launch_description():
         output="screen",
     )
 
-    # 4. Controller spawners — delayed until spawn_robot exits (robot loaded into sim)
+    # 5. Controller spawners — delayed until spawn_robot exits (robot loaded into sim)
     #    An extra 2 s timer gives the embedded gz_ros2_control plugin time to initialise
     #    the controller_manager before the spawners try to connect.
     joint_state_broadcaster_spawner = Node(
@@ -97,6 +108,7 @@ def generate_launch_description():
     return LaunchDescription([
         world_arg,
         gazebo,
+        clock_bridge,
         robot_state_publisher,
         spawn_robot,
         spawn_controllers,

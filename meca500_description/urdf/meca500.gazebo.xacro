@@ -5,8 +5,9 @@
 
     <!-- gz_ros2_control plugin: starts the embedded controller_manager in Gazebo -->
     <gazebo>
-      <plugin filename="gz_ros2_control-system"
+      <plugin filename="libgz_ros2_control-system.so"
               name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+
         <parameters>$(find meca500_bringup)/config/meca500_controllers.yaml</parameters>
         <ros>
           <remapping>~/robot_description:=robot_description</remapping>

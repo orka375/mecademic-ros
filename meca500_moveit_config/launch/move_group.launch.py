@@ -47,12 +47,17 @@ def generate_launch_description():
     }
     
     # 4. Load OMPL Planning Pipeline (This calculates the timestamps!)
-    ompl_yaml = load_yaml("meca500_moveit_config", "config/ompl_planning.yaml")
+    ompl_yaml = load_yaml(
+    "meca500_moveit_config",
+    "config/ompl_planning.yaml"
+    )
+
     planning_pipeline = {
         "planning_pipelines": ["ompl"],
         "default_planning_pipeline": "ompl",
-        "ompl": ompl_yaml
+        "ompl": ompl_yaml,
     }
+
 
     # 4. Load Controllers configuration
     controllers_yaml = load_yaml("meca500_moveit_config", "config/moveit_controllers.yaml")
@@ -83,20 +88,28 @@ def generate_launch_description():
             planning_pipeline,
             moveit_controllers,
             trajectory_execution,
-            {"use_sim_time": False},
+            {"use_sim_time": True},
         ],
     )
 
     # 7. Start RViz2 with MoveIt parameters
+    rviz_config = PathJoinSubstitution([
+        FindPackageShare("meca500_moveit_config"),
+        "config",
+        "sim.rviz"
+    ])
+    
     rviz_node = Node(
         package="rviz2",
         executable="rviz2",
         name="rviz2",
         output="log",
+        arguments=["-d", rviz_config],
         parameters=[
             robot_description,
             robot_description_semantic,
             robot_description_kinematics,
+            {"use_sim_time": True},
         ],
     )
 

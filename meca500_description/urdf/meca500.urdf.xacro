@@ -1,8 +1,12 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="Meca500_R4">
 
+  <xacro:arg name="use_sim_hardware" default="false"/>
+  <xacro:arg name="robot_ip"         default="192.168.0.100"/>
+
   <xacro:include filename="meca500_macro.xacro"/>
   <xacro:include filename="meca500.ros2_control.xacro"/>
+  <xacro:include filename="meca500.gazebo.xacro"/>
 
   <link name="world"/>
 
@@ -10,6 +14,12 @@
     <origin xyz="0 0 0" rpy="0 0 0"/>
   </xacro:meca500>
 
-  <xacro:meca500_ros2_control name="Meca500System" robot_ip="192.168.0.100"/>
+  <xacro:if value="$(arg use_sim_hardware)">
+    <xacro:meca500_ros2_control_sim name="Meca500System"/>
+    <xacro:meca500_gazebo/>
+  </xacro:if>
+  <xacro:unless value="$(arg use_sim_hardware)">
+    <xacro:meca500_ros2_control name="Meca500System" robot_ip="$(arg robot_ip)"/>
+  </xacro:unless>
 
 </robot>

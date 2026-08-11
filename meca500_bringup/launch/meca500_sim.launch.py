@@ -19,6 +19,12 @@ def generate_launch_description():
         default_value="empty.sdf",
         description="Gazebo world file to load",
     )
+    
+    alone_arg = DeclareLaunchArgument(
+        "alone",
+        default_value="true",
+        description="Robot standalone (true) or connected to PLC (false)"
+    )
 
     # Robot description built with simulation hardware plugin selected
     robot_description_content = Command([
@@ -26,7 +32,8 @@ def generate_launch_description():
         PathJoinSubstitution(
             [FindPackageShare("meca500_description"), "urdf", "meca500.urdf.xacro"]
         ),
-        " use_sim_hardware:=true",
+        " sim_mode:=true",
+        " alone:=", LaunchConfiguration("alone"),
     ])
     robot_description = {
         "robot_description": ParameterValue(robot_description_content, value_type=str)
@@ -107,6 +114,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         world_arg,
+        alone_arg,
         gazebo,
         clock_bridge,
         robot_state_publisher,

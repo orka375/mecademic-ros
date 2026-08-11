@@ -1,8 +1,10 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="Meca500_R4">
 
-  <xacro:arg name="use_sim_hardware" default="true"/>
   <xacro:arg name="robot_ip"         default="192.168.0.100"/>
+  <xacro:arg name="sim_mode"         default="false"/>
+  <xacro:arg name="alone"            default="true"/>
+  <xacro:arg name="name"             default="DummyBot"/>
 
   <xacro:include filename="meca500_macro.xacro"/>
   <xacro:include filename="meca500.ros2_control.xacro"/>
@@ -20,12 +22,12 @@
     <origin xyz="0 0 0" rpy="0 0 0"/>
   </xacro:meca500>
 
-  <xacro:if value="$(arg use_sim_hardware)">
-    <xacro:meca500_ros2_control_sim name="Meca500System"/>
+  <!-- Unified ros2_control macro -->
+  <xacro:meca500_ros2_control name="Meca500System" robot_ip="$(arg robot_ip)" sim_mode="$(arg sim_mode)" alone="$(arg alone)"/>
+
+  <!-- Include Gazebo plugin if in sim mode -->
+  <xacro:if value="$(arg sim_mode)">
     <xacro:meca500_gazebo/>
   </xacro:if>
-  <xacro:unless value="$(arg use_sim_hardware)">
-    <xacro:meca500_ros2_control name="Meca500System" robot_ip="$(arg robot_ip)"/>
-  </xacro:unless>
 
 </robot>

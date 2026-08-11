@@ -1,14 +1,37 @@
 from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument
 from launch_ros.actions import Node
-from launch.substitutions import Command, PathJoinSubstitution
+from launch.substitutions import Command, PathJoinSubstitution, LaunchConfiguration
 from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
     
+    # Declare launch arguments
+    robot_ip_arg = DeclareLaunchArgument(
+        "robot_ip",
+        default_value="192.168.0.100",
+        description="IP address of the Meca500 robot"
+    )
+    
+    sim_mode_arg = DeclareLaunchArgument(
+        "sim_mode",
+        default_value="false",
+        description="Simulation mode: true for simulation, false for real hardware"
+    )
+    
+    alone_arg = DeclareLaunchArgument(
+        "alone",
+        default_value="true",
+        description="Robot standalone (true) or connected to PLC (false)"
+    )
+    
     # 1. Process the URDF/Xacro (Simplified to avoid the TextSubstitution error)
     robot_description_content = Command([
         "xacro ",
-        PathJoinSubstitution([FindPackageShare("meca500_description"), "urdf", "meca500.urdf.xacro"])
+        PathJoinSubstitution([FindPackageShare("meca500_description"), "urdf", "meca500.urdf.xacro"]),
+        " robot_ip:=", LaunchConfiguration("robot_ip"),
+        " sim_mode:=", LaunchConfiguration("sim_mode"),
+        " alone:=", LaunchConfiguration("alone"),
     ])
     robot_description = {"robot_description": robot_description_content}
 
@@ -48,6 +71,9 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
+        robot_ip_arg,
+        sim_mode_arg,
+        alone_arg,
         control_node,
         robot_state_pub_node,
         joint_state_broadcaster_spawner,

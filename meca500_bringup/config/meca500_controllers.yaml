@@ -1,4 +1,16 @@
-controller_manager:
+# controller_manager:
+#   ros__parameters:
+#     update_rate: 500
+#     state_publish_rate: 100.0   # Changes the "Controller state will be published at..." frequency
+#     action_monitor_rate: 50.0   # Changes the "Action status changes will be monitored at..." frequency
+
+#     joint_state_broadcaster:
+#       type: joint_state_broadcaster/JointStateBroadcaster
+
+#     meca_velocity_controller:
+#       type: joint_trajectory_controller/JointTrajectoryController
+
+sim_controller_manager:
   ros__parameters:
     update_rate: 500
     state_publish_rate: 100.0   # Changes the "Controller state will be published at..." frequency

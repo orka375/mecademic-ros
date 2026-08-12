@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-  <xacro:macro name="meca500" params="parent *origin">
+  <xacro:macro name="meca500_descrip" params="parent *origin">
 
     <material name="grey">
       <color rgba="0.2 0.2 0.2 1.0"/>

@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="meca500_joint" params="name lower_limit upper_limit">
+    <joint name="${name}">
+      <command_interface name="velocity">
+        <param name="min">${lower_limit}</param>
+        <param name="max">${upper_limit}</param>
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:macro name="meca500_ros2_control" params="name robot_ip sim_mode">
+    <xacro:if value="${sim_mode}">
+      <ros2_control name="${name}" type="system">
+        <hardware>
+          <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+        </hardware>
+        <xacro:meca500_joint name="meca_axis_1" lower_limit="-2.61" upper_limit="2.61"/>
+        <xacro:meca500_joint name="meca_axis_2" lower_limit="-2.61" upper_limit="2.61"/>
+        <xacro:meca500_joint name="meca_axis_3" lower_limit="-3.14" upper_limit="3.14"/>
+        <xacro:meca500_joint name="meca_axis_4" lower_limit="-5.23" upper_limit="5.23"/>
+        <xacro:meca500_joint name="meca_axis_5" lower_limit="-5.23" upper_limit="5.23"/>
+        <xacro:meca500_joint name="meca_axis_6" lower_limit="-8.72" upper_limit="8.72"/>
+      </ros2_control>
+    </xacro:if>
+
+    <xacro:unless value="${sim_mode}">
+      <ros2_control name="${name}" type="system">
+        <hardware>
+          <plugin>meca500_hardware/Meca500SystemHardware</plugin>
+          <param name="robot_ip">${robot_ip}</param>
+        </hardware>
+        <xacro:meca500_joint name="meca_axis_1" lower_limit="-2.61" upper_limit="2.61"/>
+        <xacro:meca500_joint name="meca_axis_2" lower_limit="-2.61" upper_limit="2.61"/>
+        <xacro:meca500_joint name="meca_axis_3" lower_limit="-3.14" upper_limit="3.14"/>
+        <xacro:meca500_joint name="meca_axis_4" lower_limit="-5.23" upper_limit="5.23"/>
+        <xacro:meca500_joint name="meca_axis_5" lower_limit="-5.23" upper_limit="5.23"/>
+        <xacro:meca500_joint name="meca_axis_6" lower_limit="-8.72" upper_limit="8.72"/>
+      </ros2_control>
+    </xacro:unless>
+  </xacro:macro>
+</robot>

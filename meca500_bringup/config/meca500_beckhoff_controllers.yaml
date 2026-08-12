@@ -1,0 +1,10 @@
+beckhoff_controller_manager:
+  ros__parameters:
+
+    update_rate: 100
+
+    # gpio_controller:
+    #   type: gpio_controllers/GpioCommandController
+
+    # gpio_state_broadcaster:
+    #   type: gpio_controllers/GpioStateBroadcaster

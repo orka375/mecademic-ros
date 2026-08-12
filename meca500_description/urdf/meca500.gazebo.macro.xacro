@@ -1,14 +1,10 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-
   <xacro:macro name="meca500_gazebo">
-
-    <!-- gz_ros2_control plugin: starts the embedded controller_manager in Gazebo -->
     <gazebo>
-      <plugin filename="libgz_ros2_control-system.so"
-              name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-
+      <plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
         <parameters>$(find meca500_bringup)/config/meca500_controllers.yaml</parameters>
+        <controller_manager_name>sim_controller_manager</controller_manager_name>
         <ros>
           <remapping>~/robot_description:=robot_description</remapping>
         </ros>
@@ -50,7 +46,6 @@
       <selfCollide>false</selfCollide>
     </gazebo>
 
-    <!-- Light damping on each joint prevents oscillation under velocity control -->
     <gazebo reference="meca_axis_1">
       <implicitSpringDamper>true</implicitSpringDamper>
       <dynamics damping="0.05" friction="0.01"/>
@@ -80,7 +75,5 @@
       <implicitSpringDamper>true</implicitSpringDamper>
       <dynamics damping="0.01" friction="0.002"/>
     </gazebo>
-
   </xacro:macro>
-
 </robot>
